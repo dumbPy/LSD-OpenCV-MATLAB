@@ -10,6 +10,8 @@ import os
 import sys
 import random
 import numpy as np
+from pkg_resources import resource_filename
+from .. import lib
 
 
 def load_lsd_library():
@@ -26,30 +28,8 @@ def load_lsd_library():
     elif sys.platform == 'darwin':
         libnames = ['darwin/liblsd.dylib']
 
-    while root_dir != None:
-        for libname in libnames:
-            try:
-                lsdlib = ctypes.cdll[os.path.join(root_dir, libdir, libname)]
-                return lsdlib
-            except:
-                pass
-        tmp = os.path.dirname(root_dir)
-        if tmp == root_dir:
-            root_dir = None
-        else:
-            root_dir = tmp
-
-    # if we didn't find the library so far, try loading without
-    # a full path as a last resort
-    for libname in libnames:
-        try:
-            # print "Trying",libname
-            lsdlib = ctypes.cdll[libname]
-            return lsdlib
-        except:
-            pass
-
-    return None
+    lsdlib = ctypes.cdll[os.path.join(resource_filename('pylsd', libdir), libnames[0])]
+    return lsdlib
 
 lsdlib = load_lsd_library()
 if lsdlib == None:
